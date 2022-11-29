@@ -124,17 +124,25 @@ $(PACKAGE_DIR): build/$(LIB_PROFILER) build/$(JATTACH) $(FDTRANSFER_BIN) \
 build:
 	mkdir -p build
 
-PROFILER_STATIC_FLAGS=-static-libgcc
+PROFILER_FLAGS=-static-libgcc
 ifeq ($(OS_TAG),linux-musl)
-  PROFILER_STATIC_FLAGS+= -static-libstdc++
+  PROFILER_FLAGS+= -static-libstdc++
+endif
+
+# On x86_64 glibc (not musl), build against compat-glibc
+# see https://centos.pkgs.org/7/centos-x86_64/compat-glibc-2.12-4.el7.centos.x86_64.rpm.html
+ifneq ($(OS_TAG),linux-musl)
+  ifeq ($(ARCH),x86_64)
+    PROFILER_FLAGS+= -I /usr/lib/x86_64-redhat-linux6E/include -B /usr/lib/x86_64-redhat-linux6E/lib64/
+  endif
 endif
 
 build/$(LIB_PROFILER_SO): $(SOURCES) $(HEADERS) $(RESOURCES) $(JAVA_HELPER_CLASSES)
 ifeq ($(MERGE),true)
 	for f in src/*.cpp; do echo '#include "'$$f'"'; done |\
-	$(CXX) $(CXXFLAGS) -DPROFILER_VERSION=\"$(PROFILER_VERSION)\" $(INCLUDES) -fPIC -shared $(PROFILER_STATIC_FLAGS) -o $@ -xc++ - $(LIBS)
+	$(CXX) $(CXXFLAGS) -DPROFILER_VERSION=\"$(PROFILER_VERSION)\" $(INCLUDES) -fPIC -shared $(PROFILER_FLAGS) -o $@ -xc++ - $(LIBS)
 else
-	$(CXX) $(CXXFLAGS) -DPROFILER_VERSION=\"$(PROFILER_VERSION)\" $(INCLUDES) -fPIC -shared $(PROFILER_STATIC_FLAGS) -o $@ $(SOURCES) $(LIBS)
+	$(CXX) $(CXXFLAGS) -DPROFILER_VERSION=\"$(PROFILER_VERSION)\" $(INCLUDES) -fPIC -shared $(PROFILER_FLAGS) -o $@ $(SOURCES) $(LIBS)
 endif
 
 build/$(JATTACH): src/jattach/*.c src/jattach/*.h
