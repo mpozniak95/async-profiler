@@ -194,8 +194,8 @@ void FrameName::javaMethodName(jmethodID method) {
         (err = jvmti->GetClassSignature(method_class, &class_name, NULL)) == 0) {
         // Trim 'L' and ';' off the class descriptor like 'Ljava/lang/Object;'
         javaClassName(class_name + 1, strlen(class_name) - 2, _style);
-        jvmti->GetMethodModifiers(method, &modifiers);
         if (_includemm) {
+            jvmti->GetMethodModifiers(method, &modifiers);
             for (std::map<int, std::string>::const_iterator iterator = access_flags.begin(); iterator != access_flags.end(); iterator++) {
                 if (modifiers & iterator->first) {
                     _str.append(".").append(iterator->second);
