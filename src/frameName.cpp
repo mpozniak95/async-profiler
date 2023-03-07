@@ -96,7 +96,6 @@ FrameName::FrameName(Arguments& args, int style, int epoch, Mutex& thread_names_
     // Require printf to use standard C format regardless of system locale
     _saved_locale = uselocale(newlocale(LC_NUMERIC_MASK, "C", (locale_t)0));
     _includemm = args._includemm;
-
     buildFilter(_include, args._buf, args._include);
     buildFilter(_exclude, args._buf, args._exclude);
 
@@ -171,21 +170,6 @@ void FrameName::javaMethodName(jmethodID method) {
     char* method_sig = NULL;
     jint modifiers = 0;
 
-    // Based on: https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#:~:text=Table%C2%A04.5.%C2%A0Method%20access%20and%20property%20flags
-    std::map<int, std::string> access_flags;
-    access_flags[0x0001] = "public";
-    access_flags[0x0002] = "private";
-    access_flags[0x0004] = "protected";
-    access_flags[0x0008] = "static";
-    access_flags[0x0010] = "final";
-    access_flags[0x0020] = "synchronized";
-    access_flags[0x0040] = "bridge";
-    access_flags[0x0080] = "varargs";
-    access_flags[0x0100] = "native";
-    access_flags[0x0400] = "abstract";
-    access_flags[0x0800] = "strict";
-    access_flags[0x1000] = "synthetic";
-
     jvmtiEnv* jvmti = VM::jvmti();
     jvmtiError err;
 
@@ -196,11 +180,13 @@ void FrameName::javaMethodName(jmethodID method) {
         javaClassName(class_name + 1, strlen(class_name) - 2, _style);
         if (_includemm) {
             jvmti->GetMethodModifiers(method, &modifiers);
-            for (std::map<int, std::string>::const_iterator iterator = access_flags.begin(); iterator != access_flags.end(); iterator++) {
-                if (modifiers & iterator->first) {
-                    _str.append(".").append(iterator->second);
+            std::string modifiers_to_append = "";
+            for (int i=0; i<access_flags.size(); i++) {
+                if (modifiers & access_flags[i].first) {
+                    modifiers_to_append.append(access_flags[i].second + " ");
                 }
             }
+            _str.insert(0, modifiers_to_append);
         }
         _str.append(".").append(method_name);
         if (_style & STYLE_SIGNATURES) {
