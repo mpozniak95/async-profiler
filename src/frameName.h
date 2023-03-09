@@ -76,7 +76,6 @@ class FrameName {
     ThreadMap& _thread_names;
     locale_t _saved_locale;
     bool _includemm;
-    const int access_flags_size = 12;
     // Based on: https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#:~:text=Table%C2%A04.5.%C2%A0Method%20access%20and%20property%20flags
     // Good practice order from: https://checkstyle.sourceforge.io/config_modifier.html#ModifierOrder
     const std::pair<int, std::string> access_flags [12] = {

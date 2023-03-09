@@ -181,7 +181,7 @@ void FrameName::javaMethodName(jmethodID method) {
         if (_includemm) {
             jvmti->GetMethodModifiers(method, &modifiers);
             std::string modifiers_to_append = "";
-            for (int i=0; i<access_flags_size; i++) {
+            for (int i=0; i<(sizeof(access_flags) / sizeof(access_flags[0])); i++) {
                 if (modifiers & access_flags[i].first) {
                     modifiers_to_append.append(access_flags[i].second + " ");
                 }
