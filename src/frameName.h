@@ -76,22 +76,6 @@ class FrameName {
     ThreadMap& _thread_names;
     locale_t _saved_locale;
     bool _includemm;
-    // Based on: https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#:~:text=Table%C2%A04.5.%C2%A0Method%20access%20and%20property%20flags
-    // Good practice order from: https://checkstyle.sourceforge.io/config_modifier.html#ModifierOrder
-    const std::pair<int, std::string> access_flags [12] = {
-        std::make_pair(0x0001, "public"),
-        std::make_pair(0x0002, "private"),
-        std::make_pair(0x0004, "protected"),
-        std::make_pair(0x0400, "abstract"),
-        std::make_pair(0x0008, "static"),
-        std::make_pair(0x0010, "final"),
-        std::make_pair(0x0020, "synchronized"),
-        std::make_pair(0x0100, "native"),
-        std::make_pair(0x0800, "strict"),
-        std::make_pair(0x0040, "bridge"),
-        std::make_pair(0x0080, "varargs"),
-        std::make_pair(0x1000, "synthetic"),
-    };
 
     void buildFilter(std::vector<Matcher>& vector, const char* base, int offset);
     const char* decodeNativeSymbol(const char* name);
