@@ -118,7 +118,7 @@ build/%:
 	mkdir -p $@
 
 build/$(LAUNCHER): src/launcher/* src/jattach/* src/fdtransfer.h
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DPROFILER_VERSION=\"$(PROFILER_VERSION)\" -DSUPPRESS_OUTPUT -o $@ src/launcher/*.cpp src/jattach/*.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -static -DPROFILER_VERSION=\"$(PROFILER_VERSION)\" -o $@ src/launcher/*.cpp src/jattach/*.c
 	strip $@
 
 PROFILER_FLAGS=-static-libgcc
@@ -155,7 +155,7 @@ build/$(CONVERTER_JAR): $(CONVERTER_SOURCES) $(RESOURCES)
 	$(RM) -r build/converter
 
 %.class: %.java
-	$(JAVAC) --source $(JAVA_TARGET) -target $(JAVA_TARGET) -Xlint:-options -g:none $^
+	$(JAVAC) -source $(JAVA_TARGET) -target $(JAVA_TARGET) -Xlint:-options -g:none $^
 
 test: all
 	test/smoke-test.sh
