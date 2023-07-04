@@ -370,6 +370,9 @@ Error Arguments::parse(const char* args) {
             CASE("includemm")
                 _includemm = true;
 
+            CASE("includeln")
+                _includeln = true;
+
             DEFAULT()
                 if (_unknown_arg == NULL) _unknown_arg = arg;
         }
